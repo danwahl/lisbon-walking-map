@@ -1,0 +1,36 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+.vercel
+
+# Test artifacts
+playwright-report/
+test-results/
+
+# Data pipeline (Python env and downloaded DEM tile cache — regenerate via
+# data-prep/build_graph.py, see README)
+data-prep/.venv/
+data-prep/.cache/
+data-prep/cache/
+__pycache__/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
