@@ -13,7 +13,7 @@ describe('lisbon-mini e2e fixture', () => {
     expect(() => parseGraph(data)).not.toThrow()
   })
 
-  it('routes from Praça do Comércio to Rossio via the flatter, longer path', () => {
+  it('routes from Praça do Comércio to Rossio via the flatter, longer path when optimizing for energy (the default)', () => {
     const graph = parseGraph(data)
     const origin = snapToNearestNode(graph, 38.7077934, -9.1365543)
     const destination = snapToNearestNode(graph, 38.7140244, -9.1379408)
@@ -25,5 +25,15 @@ describe('lisbon-mini e2e fixture', () => {
     // Node 2 is the flat, longer detour; node 1 is the steep, shorter shortcut.
     expect(path!.nodeIds).toEqual([0, 2, 3])
     expect(path!.distanceM).toBeGreaterThan(700)
+  })
+
+  it("routes via the steep, shorter shortcut when optimizing for 'distance'", () => {
+    const graph = parseGraph(data)
+    const origin = snapToNearestNode(graph, 38.7077934, -9.1365543)
+    const destination = snapToNearestNode(graph, 38.7140244, -9.1379408)
+
+    const path = findPath(graph, origin!, destination!, 'distance')
+    expect(path).not.toBeNull()
+    expect(path!.nodeIds).toEqual([0, 1, 3])
   })
 })

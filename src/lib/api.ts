@@ -4,10 +4,11 @@ import type {
   Route,
   RouteErrorCode,
   RouteErrorResponse,
+  RouteMode,
   RouteResponse,
 } from '../../api/_lib/types.ts'
 
-export type { GeocodeResult, Route, RouteErrorCode }
+export type { GeocodeResult, Route, RouteErrorCode, RouteMode }
 
 export class RouteRequestError extends Error {
   code: RouteErrorCode | 'unknown_error'
@@ -30,7 +31,10 @@ export async function geocode(query: string): Promise<GeocodeResult[]> {
   return data.results
 }
 
-export async function getRoute(origin: GeocodeResult, destination: GeocodeResult): Promise<Route> {
+export async function getRoutes(
+  origin: GeocodeResult,
+  destination: GeocodeResult,
+): Promise<Record<RouteMode, Route>> {
   const response = await fetch('/api/route', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -46,5 +50,5 @@ export async function getRoute(origin: GeocodeResult, destination: GeocodeResult
   }
 
   const data = (await response.json()) as RouteResponse
-  return data.route
+  return data.routes
 }

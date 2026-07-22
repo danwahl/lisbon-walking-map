@@ -55,6 +55,20 @@ function validateGraphData(data: CityGraphData): void {
     if (e < data.nodeEdgeStart[from] || e >= data.nodeEdgeStart[from + 1]) {
       throw new Error(`parseGraph: edge ${e} has from=${from} but falls outside that node's nodeEdgeStart range`)
     }
+    if (!Number.isFinite(data.edges.distanceM[e]) || !Number.isFinite(data.edges.costS[e])) {
+      throw new Error(`parseGraph: edge ${e} has a non-finite distanceM/costS value`)
+    }
+  }
+
+  // A* relies on every weight it might sum being a finite, comparable number
+  // (NaN silently breaks relaxation: `NaN < x` is always false, so affected
+  // nodes are never reached). Node coordinates/elevation feed the pathfinding
+  // heuristic and the 'climb'/'energy' modes' live per-edge weights, so they
+  // need the same guarantee as the precomputed edge weights checked above.
+  for (let i = 0; i < nodeCount; i++) {
+    if (!Number.isFinite(data.nodes.lat[i]) || !Number.isFinite(data.nodes.lon[i]) || !Number.isFinite(data.nodes.elevation[i])) {
+      throw new Error(`parseGraph: node ${i} has a non-finite lat/lon/elevation value`)
+    }
   }
 }
 

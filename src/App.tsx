@@ -3,7 +3,8 @@ import { AddressForm } from './components/AddressForm.tsx'
 import { Footer } from './components/Footer.tsx'
 import { MapView } from './components/MapView.tsx'
 import { RouteSummary } from './components/RouteSummary.tsx'
-import { getRoute, RouteRequestError, type GeocodeResult, type Route, type RouteErrorCode } from './lib/api.ts'
+import { getRoutes, RouteRequestError, type GeocodeResult, type Route, type RouteErrorCode } from './lib/api.ts'
+import type { RouteMode } from './lib/routeModes.ts'
 
 type Status = 'idle' | 'loading' | 'error'
 
@@ -21,7 +22,9 @@ const ERROR_MESSAGES: Record<RouteErrorCode | 'unknown_error', string> = {
 function App() {
   const [origin, setOrigin] = useState<GeocodeResult | null>(null)
   const [destination, setDestination] = useState<GeocodeResult | null>(null)
-  const [route, setRoute] = useState<Route | null>(null)
+  const [routes, setRoutes] = useState<Record<RouteMode, Route> | null>(null)
+  const [selectedMode, setSelectedMode] = useState<RouteMode>('energy')
+  const [hoveredMode, setHoveredMode] = useState<RouteMode | null>(null)
   const [status, setStatus] = useState<Status>('idle')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
@@ -31,11 +34,13 @@ function App() {
     setStatus('loading')
     setErrorMessage(null)
     try {
-      const result = await getRoute(newOrigin, newDestination)
-      setRoute(result)
+      const result = await getRoutes(newOrigin, newDestination)
+      setRoutes(result)
+      setSelectedMode('energy')
+      setHoveredMode(null)
       setStatus('idle')
     } catch (err) {
-      setRoute(null)
+      setRoutes(null)
       setStatus('error')
       const code = err instanceof RouteRequestError ? err.code : 'unknown_error'
       setErrorMessage(ERROR_MESSAGES[code])
@@ -47,7 +52,7 @@ function App() {
       <header className="border-b border-slate-200 bg-white px-4 py-3 dark:border-slate-700 dark:bg-slate-900">
         <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-50">Lisbon Walking Map</h1>
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          Least-effort walking routes, weighing hills against detours
+          Walking routes across Lisbon, weighed by effort, time, distance, or climb
         </p>
       </header>
 
@@ -62,10 +67,26 @@ function App() {
               {errorMessage}
             </p>
           )}
-          {route && <RouteSummary route={route} />}
+          {routes && (
+            <RouteSummary
+              routes={routes}
+              selectedMode={selectedMode}
+              hoveredMode={hoveredMode}
+              onSelect={setSelectedMode}
+              onHover={setHoveredMode}
+            />
+          )}
         </div>
         <div className="min-h-[300px] flex-1">
-          <MapView origin={origin} destination={destination} route={route} />
+          <MapView
+            origin={origin}
+            destination={destination}
+            routes={routes}
+            selectedMode={selectedMode}
+            hoveredMode={hoveredMode}
+            onHover={setHoveredMode}
+            onSelect={setSelectedMode}
+          />
         </div>
       </div>
 

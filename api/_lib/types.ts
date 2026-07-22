@@ -19,16 +19,19 @@ export interface RouteRequest {
   cityId?: string
 }
 
+export type RouteMode = 'distance' | 'time' | 'climb' | 'energy'
+
 export interface Route {
   coordinates: [number, number][]
   distanceM: number
   durationS: number
   ascentM: number
   descentM: number
+  energyKcal: number
 }
 
 export interface RouteResponse {
-  route: Route
+  routes: Record<RouteMode, Route>
 }
 
 export type RouteErrorCode =

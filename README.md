@@ -1,12 +1,29 @@
 # Lisbon Walking Map
 
-Find the least-*effort* walking route between two Lisbon addresses — not just the shortest one.
+Find a walking route between two Lisbon addresses: not just the shortest one, but the fastest,
+the flattest, or the one that costs the least predicted energy.
 
 Lisbon is famously hilly, and a route that's 10% longer but avoids a brutal climb is often the
-better choice. This app models that tradeoff using [Tobler's hiking
-function](https://en.wikipedia.org/wiki/Tobler%27s_hiking_function), which converts a street's
-slope into a predicted walking speed, then finds the route that minimizes total predicted time —
-so a longer, flatter path naturally wins over a shorter, steeper one when it's genuinely easier.
+better choice. Every request computes four routes side by side, each optimizing a different
+notion of "best":
+
+- **Lowest energy** (selected by default): minimizes predicted metabolic energy expenditure,
+  using the cost-of-walking equation from Minetti et al. (2002),
+  *[Energy cost of walking and running at extreme uphill and downhill slopes](https://doi.org/10.1152/japplphysiol.01177.2001)*
+  (J Appl Physiol 93: 1039–1046), a polynomial fit to treadmill VO2 measurements across
+  gradients from -45% to +45%. This is the most literal reading of "least effort": minimizing
+  time or distance doesn't necessarily minimize how tired you actually get, since walking speed
+  and metabolic cost are different functions of slope.
+- **Fastest**: minimizes predicted walking time, using [Tobler's hiking
+  function](https://en.wikipedia.org/wiki/Tobler%27s_hiking_function) to convert a street's
+  slope into a predicted walking speed.
+- **Shortest**: the most direct route by distance, ignoring hills entirely.
+- **Lowest climb**: minimizes total elevation gain, even at the cost of extra distance.
+
+These four routinely diverge. The fastest route can leave you more energy-depleted than a
+slightly slower one, and the lowest-climb route can add far more distance than it saves in
+climbing. All four render on the map at once; click or hover a route in the sidebar to bring
+it to the front.
 
 ## Running locally
 
@@ -15,8 +32,8 @@ npm install
 npm run dev
 ```
 
-That's it — the app and its API run together under `npm run dev`, no separate backend process
-or account setup required.
+The app and its API run together under `npm run dev`, with no separate backend process or
+account setup required.
 
 ## Testing
 
@@ -35,7 +52,8 @@ npm run lint      # Oxlint
    at `data/cities/lisbon.json`.
 2. **At request time**: the app geocodes your two addresses (via
    [Nominatim](https://nominatim.org/)), snaps each to the nearest point on the graph, and runs
-   A* search to find the lowest-total-time path.
+   A* search four times, once per route mode (energy cost, time cost, distance, and
+   climb-penalized distance), returning all four routes together.
 
 ### Adding another city
 

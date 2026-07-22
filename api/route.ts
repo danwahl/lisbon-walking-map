@@ -1,9 +1,20 @@
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { getCityConfig, loadCityGraphData } from './_lib/cities.js'
 import { getParsedGraph } from './_lib/graph.js'
-import { findPath } from './_lib/pathfinding.js'
+import { findPath, type PathResult } from './_lib/pathfinding.js'
 import { snapToNearestNode } from './_lib/snap.js'
-import type { LatLon, RouteResponse } from './_lib/types.js'
+import type { LatLon, Route, RouteMode, RouteResponse } from './_lib/types.js'
+
+function toRoute(path: PathResult, graph: { lat: Float64Array; lon: Float64Array }): Route {
+  return {
+    coordinates: path.nodeIds.map((nodeId) => [graph.lat[nodeId], graph.lon[nodeId]]),
+    distanceM: path.distanceM,
+    durationS: path.durationS,
+    ascentM: path.ascentM,
+    descentM: path.descentM,
+    energyKcal: path.energyKcal,
+  }
+}
 
 interface RouteRequestBody {
   origin?: unknown
@@ -66,22 +77,26 @@ export default async function handler(req: IncomingMessage & { body?: unknown },
       return
     }
 
-    const path = findPath(graph, startNode, goalNode)
-    if (path === null) {
+    // Edge weights are all non-negative and validated finite at parse time
+    // (see graph.ts), so graph connectivity — and thus reachability — is
+    // identical across modes; checking one covers all four.
+    const distancePath = findPath(graph, startNode, goalNode, 'distance')
+    if (distancePath === null) {
       sendJson(res, 404, { error: 'no_route' })
       return
     }
+    const timePath = findPath(graph, startNode, goalNode, 'time')!
+    const climbPath = findPath(graph, startNode, goalNode, 'climb')!
+    const energyPath = findPath(graph, startNode, goalNode, 'energy')!
 
-    const coordinates: [number, number][] = path.nodeIds.map((nodeId) => [graph.lat[nodeId], graph.lon[nodeId]])
-    const responseBody: RouteResponse = {
-      route: {
-        coordinates,
-        distanceM: path.distanceM,
-        durationS: path.durationS,
-        ascentM: path.ascentM,
-        descentM: path.descentM,
-      },
+    const routes: Record<RouteMode, Route> = {
+      distance: toRoute(distancePath, graph),
+      time: toRoute(timePath, graph),
+      climb: toRoute(climbPath, graph),
+      energy: toRoute(energyPath, graph),
     }
+
+    const responseBody: RouteResponse = { routes }
     sendJson(res, 200, responseBody)
   } catch (err) {
     console.error('route handler failed:', err)

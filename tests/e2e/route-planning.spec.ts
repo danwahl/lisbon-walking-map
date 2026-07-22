@@ -11,11 +11,25 @@ test('finds and displays a walking route between two addresses', async ({ page }
 
   await page.getByRole('button', { name: 'Get route' }).click()
 
-  // The route polyline renders inside Leaflet's SVG overlay pane.
-  await expect(page.locator('.leaflet-overlay-pane path')).toBeVisible()
+  // One polyline per route mode (lowest energy, fastest, shortest, lowest climb)
+  // renders inside Leaflet's SVG overlay pane.
+  await expect(page.locator('.leaflet-overlay-pane path')).toHaveCount(4)
 
-  await expect(page.getByText(/km$/)).toBeVisible()
-  await expect(page.getByText(/min$/)).toBeVisible()
-  await expect(page.getByText('Distance', { exact: true })).toBeVisible()
-  await expect(page.getByText('Est. time', { exact: true })).toBeVisible()
+  const energyCard = page.getByRole('button', { name: /^Lowest energy/ })
+  const fastestCard = page.getByRole('button', { name: /^Fastest/ })
+  const shortestCard = page.getByRole('button', { name: /^Shortest/ })
+  const lowestClimbCard = page.getByRole('button', { name: /^Lowest climb/ })
+  await expect(energyCard).toBeVisible()
+  await expect(fastestCard).toBeVisible()
+  await expect(shortestCard).toBeVisible()
+  await expect(lowestClimbCard).toBeVisible()
+
+  await expect(page.getByText(/km$/).first()).toBeVisible()
+  await expect(page.getByText(/min$/).first()).toBeVisible()
+  await expect(page.getByText(/kcal$/).first()).toBeVisible()
+
+  // Selecting the "fastest" route hands it the "Selected" badge instead.
+  await expect(energyCard.getByText('Selected', { exact: true })).toBeVisible()
+  await fastestCard.click()
+  await expect(fastestCard.getByText('Selected', { exact: true })).toBeVisible()
 })

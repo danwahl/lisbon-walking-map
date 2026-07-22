@@ -60,8 +60,8 @@ function diamondGraphWithRealCoordinates(): ParsedGraph {
 }
 
 describe('findPath', () => {
-  it('prefers the longer, flatter detour when it costs less predicted time', () => {
-    const result = findPath(diamondGraph(), 0, 3)
+  it("'time' mode prefers the longer, flatter detour when it costs less predicted time", () => {
+    const result = findPath(diamondGraph(), 0, 3, 'time')
     expect(result).not.toBeNull()
     expect(result!.nodeIds).toEqual([0, 2, 3])
     expect(result!.distanceM).toBe(300)
@@ -70,8 +70,8 @@ describe('findPath', () => {
     expect(result!.descentM).toBe(0)
   })
 
-  it('prefers the direct path when it is genuinely the lowest-cost option', () => {
-    const result = findPath(triangleGraph(), 0, 2)
+  it("'time' mode prefers the direct path when it is genuinely the lowest-cost option", () => {
+    const result = findPath(triangleGraph(), 0, 2, 'time')
     expect(result).not.toBeNull()
     expect(result!.nodeIds).toEqual([0, 2])
     expect(result!.distanceM).toBe(150)
@@ -79,7 +79,7 @@ describe('findPath', () => {
   })
 
   it('finds the same optimal path when real coordinates drive the A* heuristic', () => {
-    const result = findPath(diamondGraphWithRealCoordinates(), 0, 3)
+    const result = findPath(diamondGraphWithRealCoordinates(), 0, 3, 'time')
     expect(result).not.toBeNull()
     expect(result!.nodeIds).toEqual([0, 2, 3])
     expect(result!.distanceM).toBe(300)
@@ -88,7 +88,7 @@ describe('findPath', () => {
 
   it('returns a zero-cost single-node path when start equals goal', () => {
     const result = findPath(diamondGraph(), 0, 0)
-    expect(result).toEqual({ nodeIds: [0], distanceM: 0, durationS: 0, ascentM: 0, descentM: 0 })
+    expect(result).toEqual({ nodeIds: [0], distanceM: 0, durationS: 0, ascentM: 0, descentM: 0, energyKcal: 0 })
   })
 
   it('returns null when no path exists', () => {
@@ -105,8 +105,39 @@ describe('findPath', () => {
     expect(findPath(graph, 0, 1)).toBeNull()
   })
 
+  it("'distance' mode picks the shorter-distance detour even when it is steeper and slower", () => {
+    const result = findPath(diamondGraph(), 0, 3, 'distance')
+    expect(result).not.toBeNull()
+    // Node 1 is the short, steep detour: less distance despite costing more predicted time.
+    expect(result!.nodeIds).toEqual([0, 1, 3])
+    expect(result!.distanceM).toBe(100)
+    expect(result!.durationS).toBe(200)
+  })
+
+  it("'climb' mode picks the flatter detour even when it is longer", () => {
+    const result = findPath(diamondGraph(), 0, 3, 'climb')
+    expect(result).not.toBeNull()
+    expect(result!.nodeIds).toEqual([0, 2, 3])
+    expect(result!.ascentM).toBe(0)
+  })
+
+  it("'energy' mode avoids the steep shortcut that 'distance' mode takes, preferring lower predicted metabolic cost", () => {
+    const distanceResult = findPath(diamondGraph(), 0, 3, 'distance')
+    const energyResult = findPath(diamondGraph(), 0, 3, 'energy')
+    expect(distanceResult!.nodeIds).toEqual([0, 1, 3])
+    expect(energyResult!.nodeIds).toEqual([0, 2, 3])
+    expect(energyResult!.energyKcal).toBeGreaterThan(0)
+    expect(energyResult!.energyKcal).toBeLessThan(distanceResult!.energyKcal)
+  })
+
+  it("'energy' mode remains the default when no mode is passed", () => {
+    const withDefault = findPath(diamondGraph(), 0, 3)
+    const withExplicitEnergy = findPath(diamondGraph(), 0, 3, 'energy')
+    expect(withDefault).toEqual(withExplicitEnergy)
+  })
+
   it('accumulates ascent and descent along the chosen path', () => {
-    // Same shape as diamondGraph but make the steep route (via node 1) the cheaper one.
+    // Same shape as diamondGraph but make the steep route (via node 1) the cheaper one in 'time' mode.
     const graph: ParsedGraph = {
       nodeCount: 4,
       lat: Float64Array.from([0, 0, 0, 0]),
@@ -117,7 +148,7 @@ describe('findPath', () => {
       edgeCostS: Float64Array.from([80, 200, 80, 80, 200, 200, 80, 200]),
       nodeEdgeStart: Int32Array.from([0, 2, 4, 6, 8]),
     }
-    const result = findPath(graph, 0, 3)
+    const result = findPath(graph, 0, 3, 'time')
     expect(result!.nodeIds).toEqual([0, 1, 3])
     expect(result!.ascentM).toBe(50)
     expect(result!.descentM).toBe(50)
