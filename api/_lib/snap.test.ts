@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { ParsedGraph } from './graph.ts'
-import { snapToNearestNode, SNAP_THRESHOLD_M } from './snap.ts'
+import type { ParsedGraph } from './graph.js'
+import { snapToNearestNode, SNAP_THRESHOLD_M } from './snap.js'
 
 function fixtureGraph(): ParsedGraph {
   // Three nodes roughly 111m apart in latitude (0.001 degrees).

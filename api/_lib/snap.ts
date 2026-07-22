@@ -1,5 +1,5 @@
-import type { ParsedGraph } from './graph.ts'
-import { haversineMeters } from './geo.ts'
+import type { ParsedGraph } from './graph.js'
+import { haversineMeters } from './geo.js'
 
 export const SNAP_THRESHOLD_M = 250
 

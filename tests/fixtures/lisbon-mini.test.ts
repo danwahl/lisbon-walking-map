@@ -1,9 +1,9 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import { parseGraph } from '../../api/_lib/graph.ts'
-import { findPath } from '../../api/_lib/pathfinding.ts'
-import { snapToNearestNode } from '../../api/_lib/snap.ts'
-import type { CityGraphData } from '../../api/_lib/types.ts'
+import { parseGraph } from '../../api/_lib/graph.js'
+import { findPath } from '../../api/_lib/pathfinding.js'
+import { snapToNearestNode } from '../../api/_lib/snap.js'
+import type { CityGraphData } from '../../api/_lib/types.js'
 
 const fixturePath = new URL('./lisbon-mini.json', import.meta.url)
 const data = JSON.parse(readFileSync(fixturePath, 'utf-8')) as CityGraphData

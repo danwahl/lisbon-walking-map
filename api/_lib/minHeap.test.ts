@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MinHeap } from './minHeap.ts'
+import { MinHeap } from './minHeap.js'
 
 describe('MinHeap', () => {
   it('pops empty heap as undefined', () => {

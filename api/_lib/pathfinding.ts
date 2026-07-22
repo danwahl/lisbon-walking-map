@@ -1,7 +1,7 @@
-import type { ParsedGraph } from './graph.ts'
-import { haversineMeters } from './geo.ts'
-import { MinHeap } from './minHeap.ts'
-import { MAX_SPEED_KMH } from './tobler.ts'
+import type { ParsedGraph } from './graph.js'
+import { haversineMeters } from './geo.js'
+import { MinHeap } from './minHeap.js'
+import { MAX_SPEED_KMH } from './tobler.js'
 
 // Tobler's function never predicts a speed above MAX_SPEED_KMH, so
 // haversine-distance * this factor is a true lower bound on time cost —

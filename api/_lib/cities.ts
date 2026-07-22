@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import type { CityGraphData } from './types.ts'
+import type { CityGraphData } from './types.js'
 
 const moduleDir = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(moduleDir, '../..')

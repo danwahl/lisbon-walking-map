@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { MAX_SPEED_KMH, toblerCostSeconds, toblerSpeedKmh } from './tobler.ts'
+import { MAX_SPEED_KMH, toblerCostSeconds, toblerSpeedKmh } from './tobler.js'
 
 describe('toblerSpeedKmh', () => {
   it('peaks at MAX_SPEED_KMH on a gentle 5% downhill', () => {

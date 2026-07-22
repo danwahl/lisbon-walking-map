@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { CityGraphData } from './types.ts'
-import { getParsedGraph, parseGraph } from './graph.ts'
+import type { CityGraphData } from './types.js'
+import { getParsedGraph, parseGraph } from './graph.js'
 
 function validData(): CityGraphData {
   return {

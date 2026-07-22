@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { computeGrade, MAX_ABS_GRADE } from './grade.ts'
+import { computeGrade, MAX_ABS_GRADE } from './grade.js'
 
 describe('computeGrade', () => {
   it('computes rise over run for an uphill segment', () => {

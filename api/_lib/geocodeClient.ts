@@ -1,4 +1,4 @@
-import type { GeocodeResult } from './types.ts'
+import type { GeocodeResult } from './types.js'
 
 const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search'
 const USER_AGENT = 'lisbon-walking-map (https://github.com/danwahl/lisbon-walking-map)'

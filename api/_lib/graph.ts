@@ -1,4 +1,4 @@
-import type { CityGraphData } from './types.ts'
+import type { CityGraphData } from './types.js'
 
 export interface ParsedGraph {
   nodeCount: number

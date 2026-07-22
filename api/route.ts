@@ -1,9 +1,9 @@
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { getCityConfig, loadCityGraphData } from './_lib/cities.ts'
-import { getParsedGraph } from './_lib/graph.ts'
-import { findPath } from './_lib/pathfinding.ts'
-import { snapToNearestNode } from './_lib/snap.ts'
-import type { LatLon, RouteResponse } from './_lib/types.ts'
+import { getCityConfig, loadCityGraphData } from './_lib/cities.js'
+import { getParsedGraph } from './_lib/graph.js'
+import { findPath } from './_lib/pathfinding.js'
+import { snapToNearestNode } from './_lib/snap.js'
+import type { LatLon, RouteResponse } from './_lib/types.js'
 
 interface RouteRequestBody {
   origin?: unknown

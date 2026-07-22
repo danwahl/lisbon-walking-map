@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import type { ParsedGraph } from './graph.ts'
-import { findPath } from './pathfinding.ts'
+import type { ParsedGraph } from './graph.js'
+import { findPath } from './pathfinding.js'
 
 /**
  * Diamond graph: node 0 (start) connects to node 3 (goal) two ways —

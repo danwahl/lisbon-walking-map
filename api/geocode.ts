@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { getCityConfig, loadCityGraphData } from './_lib/cities.ts'
-import { geocodeAddress } from './_lib/geocodeClient.ts'
-import type { GeocodeResponse } from './_lib/types.ts'
+import { getCityConfig, loadCityGraphData } from './_lib/cities.js'
+import { geocodeAddress } from './_lib/geocodeClient.js'
+import type { GeocodeResponse } from './_lib/types.js'
 
 interface GeocodeRequestBody {
   query?: unknown
