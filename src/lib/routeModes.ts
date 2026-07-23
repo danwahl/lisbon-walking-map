@@ -2,8 +2,7 @@ import type { RouteMode } from '../../api/_lib/types.ts'
 
 export type { RouteMode }
 
-// 'energy' first: it's the default/selected mode, since minimizing predicted
-// metabolic cost is the most literal reading of "least effort."
+// 'energy' first: it's the default/selected mode.
 export const ROUTE_MODES: RouteMode[] = ['energy', 'time', 'distance', 'climb']
 
 export interface RouteModeMeta {
@@ -16,7 +15,7 @@ export const ROUTE_MODE_META: Record<RouteMode, RouteModeMeta> = {
   energy: {
     label: 'Lowest energy',
     color: '#059669',
-    blurb: 'Minimizes predicted metabolic energy cost (Minetti et al., 2002) — the most literal reading of "least effort."',
+    blurb: 'Minimizes predicted metabolic energy cost (Minetti et al., 2002).',
   },
   time: {
     label: 'Fastest',

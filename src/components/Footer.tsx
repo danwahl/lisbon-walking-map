@@ -5,7 +5,7 @@ export function Footer() {
       <a href="https://www.openstreetmap.org/copyright" className="underline">
         OpenStreetMap
       </a>{' '}
-      contributors (ODbL) · Elevation: Copernicus DEM GLO-30 (ESA/Sinergise) · Routing via Tobler's hiking function
+      contributors (ODbL) · Elevation: Copernicus DEM GLO-30 (ESA/Sinergise)
     </footer>
   )
 }

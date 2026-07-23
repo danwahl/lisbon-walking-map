@@ -11,9 +11,9 @@ notion of "best":
   using the cost-of-walking equation from Minetti et al. (2002),
   *[Energy cost of walking and running at extreme uphill and downhill slopes](https://doi.org/10.1152/japplphysiol.01177.2001)*
   (J Appl Physiol 93: 1039–1046), a polynomial fit to treadmill VO2 measurements across
-  gradients from -45% to +45%. This is the most literal reading of "least effort": minimizing
-  time or distance doesn't necessarily minimize how tired you actually get, since walking speed
-  and metabolic cost are different functions of slope.
+  gradients from -45% to +45%. Minimizing time or distance doesn't necessarily minimize how
+  tired you actually get, since walking speed and metabolic cost are different functions of
+  slope.
 - **Fastest**: minimizes predicted walking time, using [Tobler's hiking
   function](https://en.wikipedia.org/wiki/Tobler%27s_hiking_function) to convert a street's
   slope into a predicted walking speed.
@@ -24,6 +24,9 @@ These four routinely diverge. The fastest route can leave you more energy-deplet
 slightly slower one, and the lowest-climb route can add far more distance than it saves in
 climbing. All four render on the map at once; click or hover a route in the sidebar to bring
 it to the front.
+
+Every route search updates the page URL, and the "Share route" button copies (or, on
+mobile, shares) a link that reopens the same origin, destination, and selected route.
 
 ## Running locally
 

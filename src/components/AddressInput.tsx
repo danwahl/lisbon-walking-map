@@ -9,53 +9,32 @@ interface AddressInputProps {
   label: string
   placeholder: string
   disabled?: boolean
+  initialValue?: GeocodeResult | null
   onSelect: (result: GeocodeResult | null) => void
 }
 
-export function AddressInput({ id, label, placeholder, disabled = false, onSelect }: AddressInputProps) {
-  const [query, setQuery] = useState('')
+export function AddressInput({ id, label, placeholder, disabled = false, initialValue = null, onSelect }: AddressInputProps) {
+  const [query, setQuery] = useState(initialValue?.label ?? '')
   const [suggestions, setSuggestions] = useState<GeocodeResult[]>([])
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const requestIdRef = useRef(0)
-  const justSelectedRef = useRef(false)
 
+  // Debouncing/searching only ever starts from a real keystroke (handleChange
+  // below), not from a reactive effect on `query`. That keeps a prefilled
+  // `initialValue` (e.g. from a shared-route link) inert on mount — no
+  // unwanted search-and-reopen — without needing a "just selected, skip the
+  // next search" flag that a mount effect could still fire twice for in
+  // React's dev-mode StrictMode.
   useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current)
-
-    // Selecting a suggestion sets `query` to its full label, which would
-    // otherwise re-trigger this effect and immediately reopen the dropdown
-    // with a fresh search right after the user just closed it.
-    if (justSelectedRef.current) {
-      justSelectedRef.current = false
-      return
-    }
-
-    if (query.trim().length < MIN_QUERY_LENGTH) {
-      setSuggestions([])
-      setIsLoading(false)
-      return
-    }
-
-    setIsLoading(true)
-    debounceRef.current = setTimeout(() => {
-      const requestId = ++requestIdRef.current
-      geocode(query).then((results) => {
-        if (requestId !== requestIdRef.current) return // a newer query superseded this one
-        setSuggestions(results)
-        setIsLoading(false)
-        setIsOpen(true)
-      })
-    }, DEBOUNCE_MS)
-
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current)
     }
-  }, [query])
+  }, [])
 
   function handleSelect(result: GeocodeResult) {
-    justSelectedRef.current = true
+    if (debounceRef.current) clearTimeout(debounceRef.current)
     setQuery(result.label)
     setSuggestions([])
     setIsOpen(false)
@@ -65,6 +44,25 @@ export function AddressInput({ id, label, placeholder, disabled = false, onSelec
   function handleChange(value: string) {
     setQuery(value)
     onSelect(null)
+
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+
+    if (value.trim().length < MIN_QUERY_LENGTH) {
+      setSuggestions([])
+      setIsLoading(false)
+      return
+    }
+
+    setIsLoading(true)
+    debounceRef.current = setTimeout(() => {
+      const requestId = ++requestIdRef.current
+      geocode(value).then((results) => {
+        if (requestId !== requestIdRef.current) return // a newer query superseded this one
+        setSuggestions(results)
+        setIsLoading(false)
+        setIsOpen(true)
+      })
+    }, DEBOUNCE_MS)
   }
 
   return (

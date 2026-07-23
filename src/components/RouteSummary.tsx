@@ -79,9 +79,6 @@ export function RouteSummary({ routes, selectedMode, hoveredMode, onSelect, onHo
           </button>
         )
       })}
-      <p className="px-1 text-[10px] text-slate-400 dark:text-slate-500">
-        Energy is a predicted estimate for a 70&nbsp;kg reference walker, not personalized.
-      </p>
     </div>
   )
 }

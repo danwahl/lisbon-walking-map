@@ -5,11 +5,13 @@ import type { GeocodeResult } from '../lib/api.ts'
 interface AddressFormProps {
   onSubmit: (origin: GeocodeResult, destination: GeocodeResult) => void
   isLoading: boolean
+  initialOrigin?: GeocodeResult | null
+  initialDestination?: GeocodeResult | null
 }
 
-export function AddressForm({ onSubmit, isLoading }: AddressFormProps) {
-  const [origin, setOrigin] = useState<GeocodeResult | null>(null)
-  const [destination, setDestination] = useState<GeocodeResult | null>(null)
+export function AddressForm({ onSubmit, isLoading, initialOrigin = null, initialDestination = null }: AddressFormProps) {
+  const [origin, setOrigin] = useState<GeocodeResult | null>(initialOrigin)
+  const [destination, setDestination] = useState<GeocodeResult | null>(initialDestination)
 
   const canSubmit = origin !== null && destination !== null && !isLoading
 
@@ -26,6 +28,7 @@ export function AddressForm({ onSubmit, isLoading }: AddressFormProps) {
         label="From"
         placeholder="e.g. Praça do Comércio, Lisboa"
         disabled={isLoading}
+        initialValue={initialOrigin}
         onSelect={setOrigin}
       />
       <AddressInput
@@ -33,6 +36,7 @@ export function AddressForm({ onSubmit, isLoading }: AddressFormProps) {
         label="To"
         placeholder="e.g. Castelo de São Jorge, Lisboa"
         disabled={isLoading}
+        initialValue={initialDestination}
         onSelect={setDestination}
       />
       <button
